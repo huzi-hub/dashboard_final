@@ -91,12 +91,14 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                   ),
-                  Text(
-                    'The measure of life is not its duration but its donation',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Center(
+                    child: Text(
+                      'Welcome To E-Donation App',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -133,7 +135,7 @@ class _DashboardState extends State<Dashboard> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                  image: AssetImage('assets/download1.jpg')),
+                                  image: AssetImage('assets/food.jpg')),
                               boxShadow: [
                                 BoxShadow(
                                   blurRadius: 3,
@@ -192,7 +194,7 @@ class _DashboardState extends State<Dashboard> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                  image: AssetImage('assets/download2.jpg')),
+                                  image: AssetImage('assets/clothes.jpg')),
                               boxShadow: [
                                 BoxShadow(
                                   blurRadius: 3,
@@ -246,7 +248,7 @@ class _DashboardState extends State<Dashboard> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
-                                image: AssetImage('assets/download1.jpg')),
+                                image: AssetImage('assets/books.jpg')),
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 3,

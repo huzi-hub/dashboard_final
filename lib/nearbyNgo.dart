@@ -203,6 +203,9 @@ class _NearbyNgosState extends State<NearbyNgos> {
         ngolng,
       );
     });
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) =>
+            NearbyNgos(widget.donorId, widget.fow, widget.desc)));
     distance = distanceImMeter!.round().toInt();
     distanceInKm = (distance / 1000).round().toInt();
     //print(distance);
