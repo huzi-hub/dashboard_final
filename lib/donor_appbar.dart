@@ -24,10 +24,8 @@ class DonorAppBar extends StatefulWidget {
   final email;
   final password;
   final image;
-  final fow;
-  final desc;
   DonorAppBar(this.donorId, this.address, this.username, this.contact,
-      this.email, this.password, this.image, this.fow, this.desc);
+      this.email, this.password, this.image);
   @override
   _DonorAppBar createState() => _DonorAppBar();
 }
@@ -37,8 +35,7 @@ class _DonorAppBar extends State<DonorAppBar> {
   void setState(VoidCallback fn) {
     // TODO: implement setState
     super.setState(fn);
-    Dashboard(
-        widget.donorId, widget.fow, widget.desc, widget.username, widget.image);
+    Dashboard(widget.donorId, widget.username, widget.image);
   }
 
   var currentPage = DrawerSections.griddashboard;
@@ -47,19 +44,10 @@ class _DonorAppBar extends State<DonorAppBar> {
   Widget build(BuildContext context) {
     var container;
     if (currentPage == DrawerSections.griddashboard) {
-      container = Dashboard(widget.donorId, widget.fow, widget.desc,
-          widget.username, widget.image);
+      container = Dashboard(widget.donorId, widget.username, widget.image);
     } else if (currentPage == DrawerSections.myprofile) {
-      container = EditProfile(
-          widget.address,
-          widget.username,
-          widget.contact,
-          widget.email,
-          widget.image,
-          widget.donorId,
-          widget.fow,
-          widget.desc,
-          widget.password);
+      container = EditProfile(widget.address, widget.username, widget.contact,
+          widget.email, widget.image, widget.donorId, widget.password);
     } else if (currentPage == DrawerSections.donations) {
       container = DonartionHistory(widget.donorId);
     } else if (currentPage == DrawerSections.settings) {

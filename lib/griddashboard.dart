@@ -6,12 +6,11 @@ import 'package:flutter/material.dart';
 import 'nearbyNgo.dart';
 
 class Dashboard extends StatefulWidget {
-  final fow;
+  // final fow;
   final donorId;
-  final desc;
   final username;
   final image;
-  Dashboard(this.donorId, this.fow, this.desc, this.username, this.image);
+  Dashboard(this.donorId, this.username, this.image);
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -121,12 +120,11 @@ class _DashboardState extends State<Dashboard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) =>
-                          //             NearbyNgos(widget.donorId, widget.fow, widget.desc))
-                          //             );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      NearbyNgos(widget.donorId, 'food')));
                         },
                         child: Container(
                           alignment: Alignment.bottomCenter,
@@ -183,10 +181,8 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => NearbyNgos(
-                                      widget.donorId,
-                                      widget.fow,
-                                      widget.desc)));
+                                  builder: (context) =>
+                                      NearbyNgos(widget.donorId, 'clothes')));
                         },
                         child: Container(
                           height: 115,
@@ -241,7 +237,13 @@ class _DashboardState extends State<Dashboard> {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    NearbyNgos(widget.donorId, 'books')));
+                      },
                       child: Container(
                         height: 115,
                         width: 115,

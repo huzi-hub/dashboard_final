@@ -75,13 +75,11 @@ class EditProfile extends StatefulWidget {
   final contact;
   final email1;
   final image;
-  final fow;
-  final desc;
   final donoId;
   final password;
 
   const EditProfile(this.address, this.username, this.contact, this.email1,
-      this.image, this.donoId, this.fow, this.desc, this.password);
+      this.image, this.donoId, this.password);
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -240,9 +238,7 @@ class _EditProfileState extends State<EditProfile> {
                                   widget.contact,
                                   widget.email1,
                                   widget.password,
-                                  image.text,
-                                  widget.fow,
-                                  widget.desc)));
+                                  image.text)));
                     },
                     color: Colors.green,
                     padding: EdgeInsets.symmetric(horizontal: 50),
@@ -323,9 +319,7 @@ class _EditProfileState extends State<EditProfile> {
                 msg[0]['contact'],
                 msg[0]['email'],
                 msg[0]['password'],
-                msg[0]['image'],
-                msg[0]['field_of_work'],
-                msg[0]['description'])));
+                msg[0]['image'])));
       }
     } else {
       SnackBar(content: Text('Not Registered!'));
@@ -360,9 +354,7 @@ class _EditProfileState extends State<EditProfile> {
                 msg[0]['contact'],
                 msg[0]['email'],
                 msg[0]['password'],
-                msg[0]['image'],
-                msg[0]['field_of_work'],
-                msg[0]['description'])));
+                msg[0]['image'])));
       }
     } else {
       SnackBar(content: Text('Invalid Username or Password!'));

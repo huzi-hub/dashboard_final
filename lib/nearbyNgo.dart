@@ -6,8 +6,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'headingWidget.dart';
 import 'package:geocoding/geocoding.dart';
-import 'headingwidget.dart';
 import 'models/ngoModel.dart';
 import 'ngoProfile.dart';
 
@@ -29,8 +29,7 @@ List<Ngos> parseNgos(String responseBody) {
 class NearbyNgos extends StatefulWidget {
   int donorId;
   String fow;
-  final desc;
-  NearbyNgos(this.donorId, this.fow, this.desc);
+  NearbyNgos(this.donorId, this.fow);
   @override
   State<NearbyNgos> createState() => _NearbyNgosState();
 }
@@ -91,7 +90,6 @@ class _NearbyNgosState extends State<NearbyNgos> {
                               snapshot.data![index].address,
                               snapshot.data![index].ngoId,
                               index,
-                              distance,
                               snapshot.data![index].description);
                         } else {
                           return SizedBox();
@@ -111,7 +109,7 @@ class _NearbyNgosState extends State<NearbyNgos> {
   }
 
   Widget buildCard(String name, String address, String ngoId, int cardIndex,
-      int distance, String desc) {
+      String description) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       elevation: 7.0,
@@ -168,8 +166,8 @@ class _NearbyNgosState extends State<NearbyNgos> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => NGOProfile(
-                                widget.donorId, int.parse(ngoId), desc, name)),
+                            builder: (context) => NGOProfile(widget.donorId,
+                                int.parse(ngoId), description, name)),
                       );
                     },
                     child: const Text(
@@ -203,9 +201,6 @@ class _NearbyNgosState extends State<NearbyNgos> {
         ngolng,
       );
     });
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            NearbyNgos(widget.donorId, widget.fow, widget.desc)));
     distance = distanceImMeter!.round().toInt();
     distanceInKm = (distance / 1000).round().toInt();
     //print(distance);

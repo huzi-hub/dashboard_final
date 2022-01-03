@@ -160,9 +160,7 @@ class _LoginState extends State<Login> {
                 msg[0]['contact'],
                 msg[0]['email'],
                 msg[0]['password'],
-                msg[0]['image'],
-                msg[0]['field_od_work'],
-                msg[0]['description'])));
+                msg[0]['image'])));
       }
     } else {
       SnackBar(content: Text('Invalid Username or Password!'));
