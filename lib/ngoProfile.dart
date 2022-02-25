@@ -1,20 +1,23 @@
 // ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, unnecessary_string_interpolations, sized_box_for_whitespace, camel_case_types
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import './chatScreen.dart';
 import './confirmDonation.dart';
 import './headingWidget.dart';
 import 'models/ngoModel.dart';
+import 'package:url_launcher/url_launcher.dart';
+// import 'package:whatsapp_share/whatsapp_share.dart';
 
 class NGOProfile extends StatefulWidget {
   int donorId;
   int ngoId;
   final desc;
   final name;
-  NGOProfile(this.donorId, this.ngoId, this.desc, this.name);
+  final cell;
+  NGOProfile(this.donorId, this.ngoId, this.desc, this.name, this.cell);
   @override
   _NGOProfileState createState() => _NGOProfileState();
 }
@@ -120,12 +123,9 @@ class _NGOProfileState extends State<NGOProfile> {
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ChatScreen()),
-                );
+                openwhatsapp(widget.cell);
               },
-              child: Icon(Icons.chat),
+              child: Icon(Icons.chat_rounded),
             ),
           ),
           SizedBox(
@@ -154,6 +154,48 @@ class _NGOProfileState extends State<NGOProfile> {
       ),
     );
   }
+
+  openwhatsapp(String cell) async {
+    var whatsappURl_android = "whatsapp://send?phone=" + cell + "&text=";
+    var whatappURL_ios = "https://wa.me/$cell?text=${Uri.parse("")}";
+    if (Platform.isIOS) {
+      // for iOS phone only
+      if (await canLaunch(whatappURL_ios)) {
+        await launch(whatappURL_ios, forceSafariVC: false);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+      }
+    } else {
+      // android , web
+      if (await canLaunch(whatsappURl_android)) {
+        await launch(whatsappURl_android);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+      }
+    }
+  }
+  //   Future<void> shareFile() async {
+
+  //   await WhatsappShare.share(
+  //     text: 'Whatsapp message text',
+  //     phone: '923482605579',
+  //   );
+  // }
+  // Future<void> share(String cell) async {
+  //   final val = await WhatsappShare.isInstalled();
+  //   if (val == true) {
+  //     await WhatsappShare.share(
+  //       text: 'Example share text',
+  //       linkUrl: 'https://flutter.dev/',
+  //       phone: cell,
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text('Can not open Whatsapp!')));
+  //   }
+  // }
 }
 
 class SelectedPhoto extends StatelessWidget {

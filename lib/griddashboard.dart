@@ -25,7 +25,7 @@ class _DashboardState extends State<Dashboard> {
           Container(
             margin: EdgeInsets.fromLTRB(20, 30, 25, 25),
             width: MediaQuery.of(context).size.width,
-            height: 200,
+            height: MediaQuery.of(context).size.height * 0.27,
             decoration: BoxDecoration(
                 color: Colors.blue[800],
                 borderRadius: BorderRadius.only(
@@ -46,15 +46,15 @@ class _DashboardState extends State<Dashboard> {
                   )
                 ]),
             child: Container(
-              padding: EdgeInsets.only(left: 20, top: 25),
+              padding: EdgeInsets.only(left: 15, top: 25),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     child: Container(
                       padding: EdgeInsets.fromLTRB(20, 10, 10, 10),
-                      height: 120,
-                      width: 300,
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      width: MediaQuery.of(context).size.width,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -71,8 +71,9 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               Container(
                                 padding: EdgeInsets.fromLTRB(15.0, 0, 0, 0),
-                                height: 80,
-                                width: 180,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                width: MediaQuery.of(context).size.width * 0.5,
                                 child: ListTile(
                                   title: Text(
                                     'Hello ${widget.username}',
@@ -108,8 +109,8 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Container(
                 margin: EdgeInsets.fromLTRB(35, 30, 15, 15),
-                width: 145,
-                height: 160,
+                width: MediaQuery.of(context).size.width * 0.35,
+                height: MediaQuery.of(context).size.height * 0.17,
                 padding: EdgeInsets.only(top: 19),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
@@ -128,8 +129,8 @@ class _DashboardState extends State<Dashboard> {
                         },
                         child: Container(
                           alignment: Alignment.bottomCenter,
-                          height: 115,
-                          width: 115,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          width: MediaQuery.of(context).size.height * 0.1,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
@@ -159,8 +160,8 @@ class _DashboardState extends State<Dashboard> {
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(15, 30, 15, 15),
-                width: 145,
-                height: 160,
+                width: MediaQuery.of(context).size.width * 0.35,
+                height: MediaQuery.of(context).size.height * 0.17,
                 padding: EdgeInsets.only(top: 19),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
@@ -185,8 +186,8 @@ class _DashboardState extends State<Dashboard> {
                                       NearbyNgos(widget.donorId, 'clothes')));
                         },
                         child: Container(
-                          height: 115,
-                          width: 115,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          width: MediaQuery.of(context).size.height * 0.1,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
@@ -219,19 +220,12 @@ class _DashboardState extends State<Dashboard> {
           Center(
             child: Container(
               margin: EdgeInsets.fromLTRB(25, 15, 15, 15),
-              width: 155,
-              height: 160,
+              width: MediaQuery.of(context).size.width * 0.35,
+              height: MediaQuery.of(context).size.height * 0.17,
               padding: EdgeInsets.only(top: 19),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.blue,
-                // boxShadow: [
-                //   BoxShadow(
-                //     blurRadius: 3,
-                //     offset: Offset(5, 5),
-                //     color: Color(0x2e5cb8).withOpacity(0.5),
-                //   )
-                // ]
               ),
               child: Center(
                 child: Column(
@@ -245,8 +239,8 @@ class _DashboardState extends State<Dashboard> {
                                     NearbyNgos(widget.donorId, 'books')));
                       },
                       child: Container(
-                        height: 115,
-                        width: 115,
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        width: MediaQuery.of(context).size.height * 0.1,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(

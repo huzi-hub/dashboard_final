@@ -34,13 +34,18 @@ class NearbyNgos extends StatefulWidget {
   State<NearbyNgos> createState() => _NearbyNgosState();
 }
 
-int distance = 0;
-
 class _NearbyNgosState extends State<NearbyNgos> {
+  Future<List<Ngos>>? ngos;
+  List<Ngos>? NGO;
+  List<int>? distances;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    ngos = fetchNGOs(http.Client(), widget.fow).then((value) => NGO = value);
+    for (int i = 0; i < NGO!.length; i++) {
+      distances!.add(calculateDistance(NGO![i].address));
+    }
   }
 
   @override
@@ -67,7 +72,7 @@ class _NearbyNgosState extends State<NearbyNgos> {
             height: MediaQuery.of(context).size.height * 0.8,
             margin: const EdgeInsets.only(top: 10),
             child: FutureBuilder<List<Ngos>>(
-              future: fetchNGOs(http.Client(), widget.fow),
+              future: ngos,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return const Center(
@@ -81,16 +86,17 @@ class _NearbyNgosState extends State<NearbyNgos> {
                       ),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        var distance =
-                            calculateDistance(snapshot.data![index].address);
-                        print('Distance is : ${distance} ${index}');
-                        if (distance > 0) {
+                        // var distance =
+                        //     calculateDistance(snapshot.data![index].address);
+                        // print('Distance is : ${distance} ${index}');
+                        if (distances![index] > 0) {
                           return buildCard(
                               snapshot.data![index].ngoName,
                               snapshot.data![index].address,
                               snapshot.data![index].ngoId,
                               index,
-                              snapshot.data![index].description);
+                              snapshot.data![index].description,
+                              snapshot.data![index].contact);
                         } else {
                           return SizedBox();
                         }
@@ -109,7 +115,7 @@ class _NearbyNgosState extends State<NearbyNgos> {
   }
 
   Widget buildCard(String name, String address, String ngoId, int cardIndex,
-      String description) {
+      String description, String cell) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       elevation: 7.0,
@@ -167,7 +173,7 @@ class _NearbyNgosState extends State<NearbyNgos> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => NGOProfile(widget.donorId,
-                                int.parse(ngoId), description, name)),
+                                int.parse(ngoId), description, name, cell)),
                       );
                     },
                     child: const Text(

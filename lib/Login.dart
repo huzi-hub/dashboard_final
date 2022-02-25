@@ -151,19 +151,23 @@ class _LoginState extends State<Login> {
     var result = await http.post(Uri.parse(url), body: jsonEncode(data));
     var msg = jsonDecode(result.body);
     if (result.statusCode == 200) {
-      if (msg[0] != null) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => DonorAppBar(
-                int.parse(msg[0]['user_id']),
-                msg[0]['address'],
-                msg[0]['username'],
-                msg[0]['contact'],
-                msg[0]['email'],
-                msg[0]['password'],
-                msg[0]['image'])));
+      if (result.body.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Check Internet Connection!')));
       }
+    } else if (result.body.contains('false')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid Username or Password!')));
     } else {
-      SnackBar(content: Text('Invalid Username or Password!'));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => DonorAppBar(
+              int.parse(msg[0]['user_id']),
+              msg[0]['address'],
+              msg[0]['username'],
+              msg[0]['contact'],
+              msg[0]['email'],
+              msg[0]['password'],
+              msg[0]['image'])));
     }
   }
 }

@@ -24,7 +24,7 @@ class _SignUpState extends State<SignUp> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          child: Column(
+          child: ListView(
             children: [
               Container(
                 margin: EdgeInsets.fromLTRB(10, 20, 0, 0),
@@ -197,7 +197,8 @@ class _SignUpState extends State<SignUp> {
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Login()));
     } else {
-      SnackBar(content: Text('Not Registered!'));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Can not register')));
     }
   }
 }
