@@ -1,6 +1,10 @@
 // ignore_for_file: file_names, prefer_const_constructors, unnecessary_new
 
 import 'dart:convert';
+import 'package:dashboard_final/donor_appbar.dart';
+import 'package:dashboard_final/models/donationCartModel.dart';
+import 'package:dashboard_final/models/donationsModel.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -9,8 +13,9 @@ import './headingWidget.dart';
 class ConfirmFoodDonation extends StatefulWidget {
   int donorId;
   int ngoId;
+  final ValueSetter<ProductModel> _valueSetter;
 
-  ConfirmFoodDonation(this.donorId, this.ngoId);
+  ConfirmFoodDonation(this.donorId, this.ngoId, this._valueSetter);
   @override
   State<ConfirmFoodDonation> createState() => _ConfirmDonationState();
 }
@@ -27,7 +32,7 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            height: 50,
+            height: MediaQuery.of(context).size.height * 0.05,
           ),
           Text(
             text,
@@ -37,7 +42,7 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
             ),
           ),
           SizedBox(
-            height: 10,
+            height: MediaQuery.of(context).size.height * 0.01,
           ),
           Container(
             decoration: BoxDecoration(color: Colors.white),
@@ -62,7 +67,8 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
 
   TextEditingController note = TextEditingController();
 
-  String date = "";
+  String? date;
+  String ngoName = "";
   DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
@@ -72,12 +78,14 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
           height: MediaQuery.of(context).size.height,
           child: ListView(
             children: [
-              HeadingWidget('Confirm Donation'),
               formWidget(
                   'Donation', 'Enter donation eg:"books","curry"', donation),
               formWidget(
                   'Quantity', 'Enter donation Quantity eg:"3","4"', quantity),
               formWidget('Note to NGO (optional)', 'Type here...', note),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.03,
+              ),
               Row(
                 children: [
                   SizedBox(
@@ -145,7 +153,13 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
                     width: 10,
                   ),
                   ElevatedButton(
-                      onPressed: () => makeDontion(),
+                      onPressed: () {
+                        List<ProductModel> products = [
+                          ProductModel(donation.text, quantity.text, note.text,
+                              _mySelection!, ngoName, "")
+                        ];
+                        widget._valueSetter(products[0]);
+                      },
                       child: Text(
                         'Confirm',
                         style: TextStyle(
@@ -175,7 +189,7 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
       });
   }
 
-  String _time = "";
+  String? _time;
 
   String? _mySelection;
   List foodtype = ['can be stored', 'can not be stored'];

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, unnecessary_string_interpolations, sized_box_for_whitespace, camel_case_types
+// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, unnecessary_string_interpolations, sized_box_for_whitespace, camel_case_types, avoid_unnecessary_containers
 
 import 'dart:convert';
 import 'dart:io';
@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import './confirmDonation.dart';
 import './headingWidget.dart';
+import 'models/donationsModel.dart';
 import 'models/ngoModel.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:whatsapp_share/whatsapp_share.dart';
@@ -21,6 +22,8 @@ class NGOProfile extends StatefulWidget {
   @override
   _NGOProfileState createState() => _NGOProfileState();
 }
+
+List<Donations> donation = [];
 
 class _NGOProfileState extends State<NGOProfile> {
   int photoIndex = 0;
@@ -164,7 +167,7 @@ class _NGOProfileState extends State<NGOProfile> {
         await launch(whatappURL_ios, forceSafariVC: false);
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+            .showSnackBar(SnackBar(content: Text("whatsapp no installed")));
       }
     } else {
       // android , web
@@ -172,30 +175,10 @@ class _NGOProfileState extends State<NGOProfile> {
         await launch(whatsappURl_android);
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+            .showSnackBar(SnackBar(content: Text("whatsapp no installed")));
       }
     }
   }
-  //   Future<void> shareFile() async {
-
-  //   await WhatsappShare.share(
-  //     text: 'Whatsapp message text',
-  //     phone: '923482605579',
-  //   );
-  // }
-  // Future<void> share(String cell) async {
-  //   final val = await WhatsappShare.isInstalled();
-  //   if (val == true) {
-  //     await WhatsappShare.share(
-  //       text: 'Example share text',
-  //       linkUrl: 'https://flutter.dev/',
-  //       phone: cell,
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Can not open Whatsapp!')));
-  //   }
-  // }
 }
 
 class SelectedPhoto extends StatelessWidget {
@@ -205,8 +188,8 @@ class SelectedPhoto extends StatelessWidget {
   SelectedPhoto(this.numberOfDots, this.photoIndex);
 
   Widget _inactivePhoto() {
-    return new Container(
-        child: new Padding(
+    return Container(
+        child: Padding(
       padding: const EdgeInsets.only(left: 3.0, right: 3.0),
       child: Container(
         height: 8.0,
