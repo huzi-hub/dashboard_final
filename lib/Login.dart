@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'package:dashboard_final/donor_appbar.dart';
-import 'package:dashboard_final/griddashboard.dart';
 import 'package:flutter/material.dart';
 import 'signup.dart';
 import 'main.dart';
@@ -70,6 +69,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       TextFormField(
+                        style: TextStyle(color: Colors.white),
                         controller: emailController,
                         decoration: InputDecoration(
                             fillColor: Colors.blue[800],
@@ -83,6 +83,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(height: 40),
                       TextFormField(
+                        style: TextStyle(color: Colors.white),
                         controller: passwordController,
                         obscureText: true,
                         decoration: InputDecoration(
@@ -151,14 +152,14 @@ class _LoginState extends State<Login> {
     var result = await http.post(Uri.parse(url), body: jsonEncode(data));
     var msg = jsonDecode(result.body);
     if (result.statusCode == 200) {
-      if (result.body.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Check Internet Connection!')));
-      }
-    } else if (result.body.contains('false')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid Username or Password!')));
-    } else {
+      //   if (result.body.isEmpty) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //         SnackBar(content: Text('Check Internet Connection!')));
+      //   }
+      // } else if (result.body.contains('false')) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(content: Text('Invalid Username or Password!')));
+      // } else {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => DonorAppBar(
               int.parse(msg[0]['user_id']),

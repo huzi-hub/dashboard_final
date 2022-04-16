@@ -24,6 +24,8 @@ class Ngos {
     required this.storage,
     required this.city,
     required this.fieldOfWork,
+    required this.lat,
+    required this.lng,
   });
 
   String ngoId;
@@ -36,6 +38,8 @@ class Ngos {
   String storage;
   String city;
   String fieldOfWork;
+  String lat;
+  String lng;
 
   factory Ngos.fromJson(Map<String, dynamic> json) => Ngos(
         ngoId: json["ngo_id"],
@@ -48,6 +52,8 @@ class Ngos {
         storage: json["storage"],
         city: json["city"],
         fieldOfWork: json["field_of_work"],
+        lat: json["lat"],
+        lng: json['lng'],
       );
 
   Map<String, dynamic> toJson() => {

@@ -2,16 +2,21 @@
 // ignore_for_file: file_names, prefer_const_constructors, unnecessary_new
 
 import 'dart:convert';
+import 'package:dashboard_final/models/booksCartModel.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 import './headingWidget.dart';
+import 'models/donationCartModel.dart';
 
 class ConfirmBookDonation extends StatefulWidget {
-  // int donorId;
-  // int ngoId;
+  int donorId;
+  int ngoId;
+  final ValueSetter<BooksModel> _valueSetter;
 
-  // ConfirmFoodDonation(this.donorId, this.ngoId);
+  ConfirmBookDonation(this.donorId, this.ngoId, this._valueSetter);
   @override
   State<ConfirmBookDonation> createState() => _ConfirmDonationState();
 }
@@ -19,6 +24,58 @@ class ConfirmBookDonation extends StatefulWidget {
 class _ConfirmDonationState extends State<ConfirmBookDonation> {
   String? donorEmail;
   String? ngoEmail;
+
+  List<Asset> images = [];
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 3,
+      crossAxisSpacing: 5,
+      children: List.generate(images.length, (index) {
+        Asset asset = images[index];
+        return AssetThumb(
+          asset: asset,
+          width: 100,
+          height: 100,
+        );
+      }),
+    );
+  }
+
+  Future<void> loadAssets() async {
+    List<Asset> resultList = [];
+    String error = 'No Error Detected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 3,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(
+          takePhotoIcon: "chat",
+          doneButtonTitle: "Fatto",
+        ),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+    });
+  }
+
   formWidget(String text, String hint, TextEditingController ctrl) {
     return Container(
       margin: EdgeInsets.only(
@@ -78,12 +135,46 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
             height: MediaQuery.of(context).size.height,
             child: ListView(
               children: [
-                HeadingWidget('Confirm Donation'),
                 formWidget(
                     'Donation', 'Enter donation eg:"books","curry"', donation),
-                formWidget(
-                    'Quantity', 'Enter donation Quantity eg:"3","4"', quantity),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 0, 0),
+                  child: Text(
+                    "Quantity",
+                    style: TextStyle(
+                      fontFamily: 'Quicksand',
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: TextFormField(
+                    controller: quantity,
+                    decoration: InputDecoration(
+                      hintText: 'Enter donation Quantity eg:"3","4"',
+                      hintStyle: TextStyle(
+                        color: Colors.black54,
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                    ],
+                  ),
+                ),
                 formWidget('Note to NGO (optional)', 'Type here...', note),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 20, 0, 0),
+                  child: Text(
+                    "Quantity",
+                    style: TextStyle(
+                      fontFamily: 'Quicksand',
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.05,
                 ),
@@ -122,6 +213,26 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
                   height: MediaQuery.of(context).size.height * 0.05,
                 ),
                 SizedBox(
+                  height: 15,
+                ),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        loadAssets();
+                      },
+                      child: Text('Pick Image'),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      height: 120,
+                      width: 400,
+                      color: Color(0xffe6f7ff),
+                      child: buildGridView(),
+                    ),
+                  ],
+                ),
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.02,
                 ),
                 Text(
@@ -157,7 +268,22 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
                       width: 10,
                     ),
                     ElevatedButton(
-                        onPressed: () => makeDontion(),
+                        onPressed: () {
+                          String foodType = _mySelection!;
+                          String time = _time;
+                          List<BooksModel> products = [
+                            BooksModel(
+                                donation.text,
+                                quantity.text,
+                                note.text,
+                                _mySelection!,
+                                course == null ? btitle.text : course!,
+                                board == null ? athctrl.text : board!,
+                                time,
+                                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}")
+                          ];
+                          widget._valueSetter(products[0]);
+                        },
                         child: Text(
                           'Confirm',
                           style: TextStyle(
@@ -176,19 +302,6 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
         ),
       ),
     );
-  }
-
-  _selectDate(BuildContext context) async {
-    final DateTime? selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2030),
-    );
-    if (selected != null && selected != selectedDate)
-      setState(() {
-        selectedDate = selected;
-      });
   }
 
   String _time = "";
@@ -233,7 +346,7 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
   ];
   Widget CourseList() {
     return DropdownButton<String>(
-      hint: Text('Select Category'),
+      hint: Text('Select Class'),
       items: coursetype.map((item) {
         return new DropdownMenuItem(
           child: new Text(
@@ -261,7 +374,7 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
   ];
   Widget BoardList() {
     return DropdownButton<String>(
-      hint: Text('Select Category'),
+      hint: Text('Select Board'),
       items: boardList.map((item) {
         return new DropdownMenuItem(
           child: new Text(
@@ -324,15 +437,17 @@ class _ConfirmDonationState extends State<ConfirmBookDonation> {
   }
 
   Future makeDontion() async {
-    String url = 'https://edonations.000webhostapp.com/api-donate.php';
+    String url = 'https://edonations.000webhostapp.com/api-donate-books.php';
     var data = {
       'name': donation.text,
       'quantity': quantity.text,
       'note': note.text,
-      'foodtype': _mySelection,
-      // 'user_id': widget.donorId,
-      // 'ngo_id': widget.ngoId,
-      'available_time': _time.toString()
+      'book_type': _mySelection,
+      'book_detail1': board,
+      'book_detail2': course,
+      'user_id': widget.donorId,
+      'ngo_id': widget.ngoId,
+      'available_time': _time.toString(),
     };
     var result = await http.post(Uri.parse(url), body: jsonEncode(data));
     var msg = jsonDecode(result.body);

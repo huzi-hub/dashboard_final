@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'headingWidget.dart';
-import 'package:geocoding/geocoding.dart';
 import 'models/ngoModel.dart';
 import 'ngoProfile.dart';
 
@@ -29,7 +28,8 @@ List<Ngos> parseNgos(String responseBody) {
 class NearbyNgos extends StatefulWidget {
   int donorId;
   String fow;
-  NearbyNgos(this.donorId, this.fow);
+  Position _currentUserPosition;
+  NearbyNgos(this.donorId, this.fow, this._currentUserPosition);
   @override
   State<NearbyNgos> createState() => _NearbyNgosState();
 }
@@ -43,9 +43,6 @@ class _NearbyNgosState extends State<NearbyNgos> {
     // TODO: implement initState
     super.initState();
     ngos = fetchNGOs(http.Client(), widget.fow).then((value) => NGO = value);
-    for (int i = 0; i < NGO!.length; i++) {
-      distances!.add(calculateDistance(NGO![i].address));
-    }
   }
 
   @override
@@ -86,20 +83,15 @@ class _NearbyNgosState extends State<NearbyNgos> {
                       ),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        // var distance =
-                        //     calculateDistance(snapshot.data![index].address);
-                        // print('Distance is : ${distance} ${index}');
-                        if (distances![index] > 0) {
-                          return buildCard(
-                              snapshot.data![index].ngoName,
-                              snapshot.data![index].address,
-                              snapshot.data![index].ngoId,
-                              index,
-                              snapshot.data![index].description,
-                              snapshot.data![index].contact);
-                        } else {
-                          return SizedBox();
-                        }
+                        return buildCard(
+                            snapshot.data![index].ngoName,
+                            snapshot.data![index].address,
+                            snapshot.data![index].ngoId,
+                            index,
+                            snapshot.data![index].description,
+                            snapshot.data![index].contact,
+                            double.parse(snapshot.data![index].lat),
+                            double.parse(snapshot.data![index].lng));
                       });
                 } else {
                   return const Center(
@@ -115,106 +107,109 @@ class _NearbyNgosState extends State<NearbyNgos> {
   }
 
   Widget buildCard(String name, String address, String ngoId, int cardIndex,
-      String description, String cell) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 7.0,
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-          Stack(children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height * 0.1,
-              width: MediaQuery.of(context).size.height * 0.1,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40.0),
-                  color: Colors.blue[800],
-                  image: const DecorationImage(
-                      image: NetworkImage(
-                          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'))),
-            ),
-          ]),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
-          FittedBox(
-            child: Text(
-              name,
-              style: const TextStyle(
-                fontFamily: 'Quicksand',
-                fontWeight: FontWeight.bold,
-                fontSize: 15.0,
+      String description, String cell, double lat, double lng) {
+    var distance = calculateDistance(lat, lng);
+
+    print('Distance is : ${distance}');
+    if (distance > 0) {
+      return Card(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        elevation: 7.0,
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+            Stack(children: <Widget>[
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                width: MediaQuery.of(context).size.height * 0.1,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(40.0),
+                    color: Colors.blue[800],
+                    image: const DecorationImage(
+                        image: NetworkImage(
+                            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'))),
               ),
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.005),
-          FittedBox(
-            child: Text(
-              address,
-              style: const TextStyle(
+            ]),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+            FittedBox(
+              child: Text(
+                name,
+                style: const TextStyle(
                   fontFamily: 'Quicksand',
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.0,
-                  color: Colors.grey),
+                  fontSize: 15.0,
+                ),
+              ),
             ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-          Expanded(
-              child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Colors.blue[800],
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0)),
-                  ),
-                  child: Center(
-                      child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NGOProfile(widget.donorId,
-                                int.parse(ngoId), description, name, cell)),
-                      );
-                    },
-                    child: const Text(
-                      'View Profile',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Quicksand',
-                      ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.005),
+            FittedBox(
+              child: Text(
+                address,
+                style: const TextStyle(
+                    fontFamily: 'Quicksand',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.0,
+                    color: Colors.grey),
+              ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+            Expanded(
+                child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Colors.blue[800],
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(10.0),
+                          bottomRight: Radius.circular(10.0)),
                     ),
-                  ))))
-        ],
-      ),
-      margin: cardIndex.isEven
-          ? const EdgeInsets.fromLTRB(10.0, 0.0, 25.0, 10.0)
-          : const EdgeInsets.fromLTRB(25.0, 0.0, 5.0, 10.0),
-    );
+                    child: Center(
+                        child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NGOProfile(
+                                  widget.donorId,
+                                  int.parse(ngoId),
+                                  description,
+                                  name,
+                                  cell,
+                                  widget.fow)),
+                        );
+                      },
+                      child: const Text(
+                        'View Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Quicksand',
+                        ),
+                      ),
+                    ))))
+          ],
+        ),
+        margin: cardIndex.isEven
+            ? const EdgeInsets.fromLTRB(10.0, 0.0, 25.0, 10.0)
+            : const EdgeInsets.fromLTRB(25.0, 0.0, 5.0, 10.0),
+      );
+    }
+    throw (Exception);
   }
 
-  int calculateDistance(String address) {
+  int calculateDistance(double lat, double lng) {
     int distanceInKm;
     int distance;
-    locationFromAddress(address).then((result) async {
-      _currentUserPosition = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      double ngolat = result[0].latitude;
-      double ngolng = result[0].longitude;
-      distanceImMeter = Geolocator.distanceBetween(
-        _currentUserPosition!.latitude,
-        _currentUserPosition!.longitude,
-        ngolat,
-        ngolng,
-      );
-    });
+    distanceImMeter = Geolocator.distanceBetween(
+      widget._currentUserPosition.latitude,
+      widget._currentUserPosition.longitude,
+      lat,
+      lng,
+    );
     distance = distanceImMeter!.round().toInt();
     distanceInKm = (distance / 1000).round().toInt();
-    //print(distance);
-
     return distanceInKm;
   }
 }
 
-Position? _currentUserPosition;
 double? distanceImMeter = 0.0;
 List<Ngos> ngodata = [];

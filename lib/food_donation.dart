@@ -5,14 +5,18 @@ import 'package:dashboard_final/donor_appbar.dart';
 import 'package:dashboard_final/models/donationCartModel.dart';
 import 'package:dashboard_final/models/donationsModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 import './headingWidget.dart';
+// import 'models/Users.dart';
 
 class ConfirmFoodDonation extends StatefulWidget {
   int donorId;
   int ngoId;
+
   final ValueSetter<ProductModel> _valueSetter;
 
   ConfirmFoodDonation(this.donorId, this.ngoId, this._valueSetter);
@@ -21,8 +25,66 @@ class ConfirmFoodDonation extends StatefulWidget {
 }
 
 class _ConfirmDonationState extends State<ConfirmFoodDonation> {
+  // UserModel? model;
   String? donorEmail;
   String? ngoEmail;
+
+  List<Asset> images = [];
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 3,
+      crossAxisSpacing: 5,
+      children: List.generate(images.length, (index) {
+        Asset asset = images[index];
+        return AssetThumb(
+          asset: asset,
+          width: 100,
+          height: 100,
+        );
+      }),
+    );
+  }
+
+  Future<void> loadAssets() async {
+    List<Asset> resultList = [];
+    String error = 'No Error Detected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 3,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(
+          takePhotoIcon: "chat",
+          doneButtonTitle: "Fatto",
+        ),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   formWidget(String text, String hint, TextEditingController ctrl) {
     return Container(
       margin: EdgeInsets.only(
@@ -68,7 +130,6 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
   TextEditingController note = TextEditingController();
 
   String? date;
-  String ngoName = "";
   DateTime selectedDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
@@ -80,8 +141,33 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
             children: [
               formWidget(
                   'Donation', 'Enter donation eg:"books","curry"', donation),
-              formWidget(
-                  'Quantity', 'Enter donation Quantity eg:"3","4"', quantity),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 20, 0, 0),
+                child: Text(
+                  "Quantity",
+                  style: TextStyle(
+                    fontFamily: 'Quicksand',
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                decoration: BoxDecoration(color: Colors.white),
+                child: TextFormField(
+                  controller: quantity,
+                  decoration: InputDecoration(
+                    hintText: 'Enter donation Quantity eg:"3","4"',
+                    hintStyle: TextStyle(
+                      color: Colors.black54,
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                  ],
+                ),
+              ),
               formWidget('Note to NGO (optional)', 'Type here...', note),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.03,
@@ -120,14 +206,23 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
-              ElevatedButton(
-                onPressed: () {
-                  _selectDate(context);
-                },
-                child: Text("Choose Date"),
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      loadAssets();
+                    },
+                    child: Text('Pick Image'),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 10),
+                    height: 120,
+                    width: 400,
+                    color: Color(0xffe6f7ff),
+                    child: buildGridView(),
+                  ),
+                ],
               ),
-              Text(
-                  "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
@@ -154,9 +249,16 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
                   ),
                   ElevatedButton(
                       onPressed: () {
+                        String foodType = _mySelection!;
+                        String time = _time!;
                         List<ProductModel> products = [
-                          ProductModel(donation.text, quantity.text, note.text,
-                              _mySelection!, ngoName, "")
+                          ProductModel(
+                              donation.text,
+                              quantity.text,
+                              note.text,
+                              foodType,
+                              time,
+                              "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}")
                         ];
                         widget._valueSetter(products[0]);
                       },
@@ -219,7 +321,8 @@ class _ConfirmDonationState extends State<ConfirmFoodDonation> {
       'name': donation.text,
       'quantity': quantity.text,
       'note': note.text,
-      'foodtype': _mySelection,
+      'date': date,
+      'food_type': _mySelection,
       'user_id': widget.donorId,
       'ngo_id': widget.ngoId,
       'available_time': _time.toString()

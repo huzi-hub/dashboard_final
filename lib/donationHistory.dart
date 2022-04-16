@@ -39,10 +39,19 @@ class _DonartionHistoryState extends State<DonartionHistory> {
     return Scaffold(
       body: ListView(
         children: [
-          HeadingWidget('Donation History'),
-          const SizedBox(
-            height: 20,
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(left: 25, right: 25),
+            child: const Text(
+              'Donations History',
+              style: TextStyle(
+                  fontFamily: 'Quicksand',
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
+            ),
           ),
+          Divider(),
           Center(
             child: Container(
               height: MediaQuery.of(context).size.height * 0.25,
@@ -82,7 +91,8 @@ class _DonartionHistoryState extends State<DonartionHistory> {
                             leading: CircleAvatar(
                               radius: 30,
                               child: Expanded(
-                                  child: Text(snapshot.data![index].ngoName)),
+                                  child:
+                                      Text('${snapshot.data![index].ngoName}')),
                             ),
                             title: Text(
                               snapshot.data![index].name,

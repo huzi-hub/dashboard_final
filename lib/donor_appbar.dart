@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 
+import 'package:dashboard_final/pendingdonation.dart';
 import 'package:flutter/material.dart';
 import 'Login.dart';
 import 'Services/donationServices.dart';
@@ -52,6 +53,10 @@ class _DonorAppBar extends State<DonorAppBar> {
       container = DonartionHistory(widget.donorId);
     } else if (currentPage == DrawerSections.settings) {
       container = ChangePassword(widget.donorId, widget.password, widget.email);
+    } else if (currentPage == DrawerSections.pendingdonation) {
+      container = PendingDonations(widget.donorId);
+    } else if (currentPage == DrawerSections.home) {
+      container = Dashboard(widget.donorId, widget.username, widget.image);
     }
     return Scaffold(
       appBar: AppBar(
@@ -86,14 +91,18 @@ class _DonorAppBar extends State<DonorAppBar> {
       child: Column(
         // shows the list of menu drawer
         children: [
-          menuItem(1, "My Profile", Icons.image,
+          menuItem(1, "Home", Icons.home,
+              currentPage == DrawerSections.home ? true : false),
+          menuItem(2, "My Profile", Icons.image,
               currentPage == DrawerSections.myprofile ? true : false),
-          menuItem(2, "Donations", Icons.dashboard,
+          menuItem(3, "Donations", Icons.dashboard,
               currentPage == DrawerSections.donations ? true : false),
+          menuItem(4, "Pending Donations", Icons.pending_actions_rounded,
+              currentPage == DrawerSections.pendingdonation ? true : false),
           Divider(),
-          menuItem(3, "Settings", Icons.settings_outlined,
+          menuItem(5, "Settings", Icons.settings_outlined,
               currentPage == DrawerSections.settings ? true : false),
-          menuItem(4, "Notifications", Icons.notifications_outlined,
+          menuItem(6, "Notifications", Icons.notifications_outlined,
               currentPage == DrawerSections.notifications ? true : false),
           logout('Logout', Icons.logout),
         ],
@@ -109,12 +118,16 @@ class _DonorAppBar extends State<DonorAppBar> {
           Navigator.pop(context);
           setState(() {
             if (id == 1) {
-              currentPage = DrawerSections.myprofile;
+              currentPage = DrawerSections.home;
             } else if (id == 2) {
-              currentPage = DrawerSections.donations;
+              currentPage = DrawerSections.myprofile;
             } else if (id == 3) {
-              currentPage = DrawerSections.settings;
+              currentPage = DrawerSections.donations;
             } else if (id == 4) {
+              currentPage = DrawerSections.pendingdonation;
+            } else if (id == 5) {
+              currentPage = DrawerSections.settings;
+            } else if (id == 6) {
               currentPage = DrawerSections.notifications;
             }
           });
@@ -190,4 +203,6 @@ enum DrawerSections {
   notifications,
   notes,
   griddashboard,
+  pendingdonation,
+  home,
 }

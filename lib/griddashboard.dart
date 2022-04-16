@@ -1,8 +1,7 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'package:dashboard_final/main.dart';
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'nearbyNgo.dart';
 
 class Dashboard extends StatefulWidget {
@@ -16,7 +15,52 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
+Position? _currentUserPosition;
+Future getlocation() async {
+  return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high);
+}
+
 class _DashboardState extends State<Dashboard> {
+  Future _getStoragePermission() async {
+    if (await Permission.storage.request().isGranted) {
+      setState(() {
+        PermissionStatus.granted;
+      });
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.storage.request().isDenied) {
+      setState(() {
+        PermissionStatus.denied;
+      });
+    }
+  }
+
+  Future _getLocationPermission() async {
+    if (await Permission.locationWhenInUse.request().isGranted) {
+      setState(() {
+        PermissionStatus.granted;
+      });
+    } else if (await Permission.locationWhenInUse
+        .request()
+        .isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.locationWhenInUse.request().isDenied) {
+      setState(() {
+        PermissionStatus.denied;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getLocationPermission();
+    getlocation().then((value) => _currentUserPosition = value);
+    _getStoragePermission();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,8 +168,10 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      NearbyNgos(widget.donorId, 'food')));
+                                  builder: (context) => NearbyNgos(
+                                      widget.donorId,
+                                      'food',
+                                      _currentUserPosition!)));
                         },
                         child: Container(
                           alignment: Alignment.bottomCenter,
@@ -182,8 +228,10 @@ class _DashboardState extends State<Dashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      NearbyNgos(widget.donorId, 'clothes')));
+                                  builder: (context) => NearbyNgos(
+                                      widget.donorId,
+                                      'clothes',
+                                      _currentUserPosition!)));
                         },
                         child: Container(
                           height: MediaQuery.of(context).size.height * 0.1,
@@ -235,8 +283,8 @@ class _DashboardState extends State<Dashboard> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    NearbyNgos(widget.donorId, 'books')));
+                                builder: (context) => NearbyNgos(widget.donorId,
+                                    'books', _currentUserPosition!)));
                       },
                       child: Container(
                         height: MediaQuery.of(context).size.height * 0.1,

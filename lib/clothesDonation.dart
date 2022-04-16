@@ -1,24 +1,24 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, non_constant_identifier_names, prefer_if_null_operators
 // ignore_for_file: file_names, prefer_const_constructors, unnecessary_new
 
 import 'dart:convert';
+import 'package:dashboard_final/models/clothesCartModel.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import './headingWidget.dart';
 
 class ConfirmClothesDonation extends StatefulWidget {
-  // int donorId;
-  // int ngoId;
+  int donorId;
+  int ngoId;
+  final ValueSetter<ClothesModel> _valueSetter;
 
-  // ConfirmFoodDonation(this.donorId, this.ngoId);
+  ConfirmClothesDonation(this.donorId, this.ngoId, this._valueSetter);
   @override
   State<ConfirmClothesDonation> createState() => _ConfirmDonationState();
 }
 
 class _ConfirmDonationState extends State<ConfirmClothesDonation> {
-  String? donorEmail;
-  String? ngoEmail;
   formWidget(String text, String hint, TextEditingController ctrl) {
     return Container(
       margin: EdgeInsets.only(
@@ -79,8 +79,8 @@ class _ConfirmDonationState extends State<ConfirmClothesDonation> {
             child: ListView(
               children: [
                 HeadingWidget('Confirm Donation'),
-                formWidget(
-                    'Donation', 'Enter donation eg:"books","curry"', donation),
+                formWidget('Donation',
+                    'Enter donation eg:"Black pant","Black shirt"', donation),
                 formWidget(
                     'Quantity', 'Enter donation Quantity eg:"3","4"', quantity),
                 formWidget('Note to NGO (optional)', 'Type here...', note),
@@ -157,7 +157,23 @@ class _ConfirmDonationState extends State<ConfirmClothesDonation> {
                       width: 10,
                     ),
                     ElevatedButton(
-                        onPressed: () => makeDontion(),
+                        onPressed: () {
+                          String foodType = _mySelection!;
+                          String time = _time;
+                          List<ClothesModel> products = [
+                            ClothesModel(
+                                donation.text,
+                                quantity.text,
+                                note.text,
+                                _mySelection!,
+                                course == null ? Size! : course!,
+                                board == null ? adlt! : board!,
+                                category!,
+                                time,
+                                "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}")
+                          ];
+                          widget._valueSetter(products[0]);
+                        },
                         child: Text(
                           'Confirm',
                           style: TextStyle(
@@ -176,19 +192,6 @@ class _ConfirmDonationState extends State<ConfirmClothesDonation> {
         ),
       ),
     );
-  }
-
-  _selectDate(BuildContext context) async {
-    final DateTime? selected = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2022),
-      lastDate: DateTime(2030),
-    );
-    if (selected != null && selected != selectedDate)
-      setState(() {
-        selectedDate = selected;
-      });
   }
 
   String _time = "";
@@ -422,6 +425,10 @@ class _ConfirmDonationState extends State<ConfirmClothesDonation> {
                       height: MediaQuery.of(context).size.height * 0.02,
                     ),
                     BoardList(),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    CategoryList(),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.02,
                     ),

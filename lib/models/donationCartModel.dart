@@ -1,20 +1,22 @@
 // ignore_for_file: file_names
 
 class ProductModel {
-  late String donation;
+  late String name;
   late String quantity;
   late String note;
-  late String _mySelection;
-  late String ngoname;
-  late String _time;
+  String? mySelection;
+  // late String ngoname;
+  String? time;
+  late String date;
 
-  ProductModel(String donation, String quantity, String note,
-      String _mySelection, String ngoname, String _time) {
-    this.donation = donation;
+  ProductModel(String name, String quantity, String note, String mySelection,
+      String time, String date) {
+    this.name = name;
     this.quantity = quantity;
     this.note = note;
-    this._mySelection = _mySelection;
-    this.ngoname = ngoname;
-    this._time = _time;
+    this.mySelection = mySelection;
+    // this.ngoname = ngoname;
+    this.time = time;
+    this.date = date;
   }
 }

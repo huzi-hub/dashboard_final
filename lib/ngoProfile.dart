@@ -2,15 +2,19 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:dashboard_final/cart.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:whatsapp_share/whatsapp_share.dart';
 import './confirmDonation.dart';
 import './headingWidget.dart';
+import 'food_donation.dart';
 import 'models/donationsModel.dart';
 import 'models/ngoModel.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:whatsapp_share/whatsapp_share.dart';
+import 'package:flutter_launch/flutter_launch.dart';
 
 class NGOProfile extends StatefulWidget {
   int donorId;
@@ -18,7 +22,9 @@ class NGOProfile extends StatefulWidget {
   final desc;
   final name;
   final cell;
-  NGOProfile(this.donorId, this.ngoId, this.desc, this.name, this.cell);
+  final fow;
+  NGOProfile(
+      this.donorId, this.ngoId, this.desc, this.name, this.cell, this.fow);
   @override
   _NGOProfileState createState() => _NGOProfileState();
 }
@@ -61,7 +67,7 @@ class _NGOProfileState extends State<NGOProfile> {
                     image: DecorationImage(
                         image: AssetImage(photos[photoIndex]),
                         fit: BoxFit.fill)),
-                height: 210.0,
+                height: MediaQuery.of(context).size.height * 0.2,
               ),
               Positioned(
                 top: 190.0,
@@ -71,7 +77,7 @@ class _NGOProfileState extends State<NGOProfile> {
               ),
               GestureDetector(
                 child: Container(
-                  height: 200.0,
+                  height: MediaQuery.of(context).size.height * 0.2,
                   width: MediaQuery.of(context).size.width,
                   color: Colors.transparent,
                 ),
@@ -79,7 +85,7 @@ class _NGOProfileState extends State<NGOProfile> {
               ),
               GestureDetector(
                 child: Container(
-                  height: 210.0,
+                  height: MediaQuery.of(context).size.height * 0.2,
                   width: MediaQuery.of(context).size.width / 2,
                   color: Colors.transparent,
                 ),
@@ -105,7 +111,7 @@ class _NGOProfileState extends State<NGOProfile> {
             height: 10,
           ),
           Container(
-            height: 240,
+            height: MediaQuery.of(context).size.height * 0.45,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10), color: Colors.white),
             padding: EdgeInsets.only(left: 10),
@@ -142,8 +148,8 @@ class _NGOProfileState extends State<NGOProfile> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              ConfirmDonation(widget.donorId, widget.ngoId)),
+                          builder: (context) => CartApp(
+                              widget.donorId, widget.ngoId, widget.fow)),
                     );
                   },
                   child: Text(
@@ -167,7 +173,7 @@ class _NGOProfileState extends State<NGOProfile> {
         await launch(whatappURL_ios, forceSafariVC: false);
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("whatsapp no installed")));
+            .showSnackBar(SnackBar(content: Text("whatsapp not installed")));
       }
     } else {
       // android , web
@@ -175,7 +181,7 @@ class _NGOProfileState extends State<NGOProfile> {
         await launch(whatsappURl_android);
       } else {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("whatsapp no installed")));
+            .showSnackBar(SnackBar(content: Text("whatsapp not installed")));
       }
     }
   }
